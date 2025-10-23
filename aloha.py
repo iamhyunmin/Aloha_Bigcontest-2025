@@ -6,7 +6,6 @@ import streamlit as st
 from pathlib import Path
 from dotenv import load_dotenv
 from PIL import Image
-from rag_gemini import generate_revue_answer  # ✅ 기존 RAG+Gemini 함수 그대로 사용
 import re # <-- 1. re 모듈 추가
 import traceback
 import requests
@@ -379,7 +378,6 @@ for msg in st.session_state["chat_history"]:
 
 # 사용자 입력
 if prompt := st.chat_input("가맹점 이름과 정확한 주소를 함께 질문에 입력하세요."):
-    # 사용자 메시지 저장 및 표시
     st.session_state["chat_history"].append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -388,20 +386,21 @@ if prompt := st.chat_input("가맹점 이름과 정확한 주소를 함께 질�
     with st.chat_message("assistant"):
         with st.spinner("🔍 분석 중입니다..."):
             try:
-                # 1. LLM 응답을 받습니다. (주석 해제)
-                # 'generate_revue_answer' 함수는 'rag_gemini' 모듈에서 가져옵니다.
-                answer = generate_revue_answer(prompt)
-                
-                # 2. LLM 응답을 파싱하고 구조화된 Streamlit 보고서로 출력합니다.
-                display_revue_report(answer) 
-                
+                res = requests.post(API_URL, json={"query": prompt})
+                data = res.json()
+                if "answer" in data:
+                    answer = data["answer"]
+                    if "===== 📍 현재 위치 파악 =====" in answer:
+                        display_revue_report(answer)
+                    else:
+                        st.markdown(answer)
+                else:
+                    answer = f"⚠️ 서버 오류: {data.get('error', '응답 없음')}"
+                    st.markdown(answer)
             except Exception as e:
-                # 3. 오류 발생 시, 오류 메시지만 채팅창에 표시합니다.
-                answer = f"⚠️ 오류 발생: {e}"
+                answer = f"⚠️ 서버 연결 실패: {e}"
                 st.markdown(answer)
-                
-    # 4. 전체 응답 텍스트 (파싱 전 원본)를 대화 기록에 저장합니다.
+                print(traceback.format_exc())
+
     st.session_state["chat_history"].append({"role": "assistant", "content": answer})
     st.rerun()
-
-    # LFS Refresh Commit
