@@ -1,0 +1,35 @@
+# ---------- Core Environment ----------
+torch==2.5.1
+#torch<- 스트림릿 클라우드 실행시 버전 명시 X
+
+# ---------- Sentence Embedding & Transformers ----------
+sentence-transformers==2.2.2     # 안정 버전, bge-m3 호환
+transformers==4.37.2             # huggingface_hub 0.24대와 호환
+huggingface_hub==0.24.5          # split_torch_state_dict_into_shards 포함
+
+# ---------- Retrieval & Indexing ----------
+faiss-cpu
+langchain
+numpy
+pandas
+tqdm
+
+# ---------- Utility & Processing ----------
+scikit-learn
+scipy
+regex
+fastapi
+uvicorn
+
+# ---------- Visualization & Web UI ----------
+matplotlib
+seaborn
+streamlit==1.39.0
+
+# ---------- External API ----------
+google-generativeai
+python-dotenv
+
+# ---------- Image Processing ----------
+pillow
+pathlib
