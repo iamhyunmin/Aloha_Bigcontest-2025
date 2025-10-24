@@ -222,7 +222,7 @@ def display_revue_report(llm_output_text):
     # [경로 탐색]
     data['Enhance_line'] = extract_section(r'강화 경로 \(Enhance Line\):\s*(.*?)\s*- 보수 경로', llm_output_text)
     data['Fix_line'] = extract_section(r'보수 경로 \(Fix Line\):\s*(.*?)\s*- 전환 경로', llm_output_text)
-    data['Shift_line'] = extract_section(r'전환 경로 \(Shift Line\):\s*(.*?)\s*(?:=====|\Z)', llm_output_text)
+    data['Shift_line'] = extract_section(r'전환 경로 \(Shift Line\):\s*(.*?)\s*===== 🏁최종 경로', llm_output_text)
 
     # [최종 경로]
     data['recommended_path'] = extract_section(r'추천 경로:\s*(.*?)\s*\n', llm_output_text)
@@ -235,9 +235,7 @@ def display_revue_report(llm_output_text):
     data['expected_effect'] = extract_section(r'<기대효과>\s*(.*?)\s*(?:===== 🏆 도착 알림|\Z)', llm_output_text)
 
     # [도착 알림]
-    data['growth_phrase'] = extract_section(
-        r'🎉오늘 사장님은 [“"](.*?)[”"]?(으)?로 성장했습니다', llm_output_text
-    )
+    data['growth_phrase'] = extract_section(r'🎉오늘 사장님은 [“"](.*?)[”"](으)?로 성장했습니다', llm_output_text)
 
     # ===============================================
     # Streamlit UI 렌더링
