@@ -238,7 +238,7 @@ def display_revue_report(llm_output_text):
 
     # [도착 알림] 섹션
     data['growth_phrase'] = extract_section(r'🎉오늘 사장님은 “\s*(.*?)\s*”으로 성장했습니다!', llm_output_text)
-
+    
     # 2. Streamlit UI 구성
     
     # 1. 현재 위치 파악
