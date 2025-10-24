@@ -1,4 +1,11 @@
-streamlit
-requests
-
+fastapi
+uvicorn
+pandas
+numpy
+faiss-cpu
+sentence-transformers
+google-generativeai
+huggingface_hub
 python-dotenv
+
+
