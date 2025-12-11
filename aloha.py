@@ -10,7 +10,7 @@ import re # <-- 1. re 모듈 추가
 import traceback
 import requests
 
-API_URL = "https://hyunmin0215-revue-mcp.hf.space/search" # MCP 서버 주소
+API_URL = "https://hyunmin0215-revue-mcp.hf.space/search/" # MCP 서버 주소
 
 # -------------------------------
 # 환경 변수 로드
