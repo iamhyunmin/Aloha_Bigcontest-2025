@@ -9,6 +9,7 @@ from PIL import Image
 import re # <-- 1. re 모듈 추가
 import traceback
 import requests
+import json
 
 API_URL = "https://hyunmin0215-revue-mcp.hf.space/search/" # MCP 서버 주소
 
@@ -363,8 +364,21 @@ if prompt := st.chat_input("가맹점 이름과 정확한 주소를 함께 질�
     with st.chat_message("assistant"):
         with st.spinner("🔍 분석 중입니다..."):
             try:
+                # 1. 서버로 요청 보내기 (API_URL 확인용 출력 포함)
+                # st.write(f"DEBUG: {API_URL} 로 요청 보냄") # 필요하면 주석 해제해서 주소 확인
                 res = requests.post(API_URL, json={"query": prompt})
+
+                # 2. [중요] 상태 코드가 200(성공)이 아니면 에러 내용 보여주고 멈추기
+                if res.status_code != 200:
+                    st.error(f"🚨 서버 연결 실패! (상태 코드: {res.status_code})")
+                    st.warning("▼ 서버가 보낸 에러 메시지 (HTML 내용) ▼")
+                    # 서버가 보낸 내용을 화면에 그대로 뿌려줍니다. (여기서 원인 확인 가능)
+                    st.code(res.text[:1000]) 
+                    st.stop() # 더 이상 진행하지 않고 여기서 멈춤
+
+                # 3. 정상일 때만 JSON 변환
                 data = res.json()
+
                 if "answer" in data:
                     answer = data["answer"]
                     if "===== 📍 현재 위치 파악 =====" in answer:
@@ -374,9 +388,17 @@ if prompt := st.chat_input("가맹점 이름과 정확한 주소를 함께 질�
                 else:
                     answer = f"⚠️ 서버 오류: {data.get('error', '응답 없음')}"
                     st.markdown(answer)
+
             except Exception as e:
-                answer = f"⚠️ 서버 연결 실패: {e}"
-                st.markdown(answer)
+                # JSON 변환 에러나 기타 연결 에러가 나면 여기서 잡힘
+                st.error("⚠️ 에러 발생 (HTML 응답이 왔을 가능성 높음)")
+                st.write(f"에러 메시지: {e}")
+                
+                # 만약 res 변수가 만들어졌다면, 그 내용을 보여줌
+                if 'res' in locals():
+                    st.warning("▼ 서버가 보낸 실제 내용 (HTML인지 확인하세요) ▼")
+                    st.code(res.text[:1000]) 
+                
                 print(traceback.format_exc())
 
     st.session_state["chat_history"].append({"role": "assistant", "content": answer})
